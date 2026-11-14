@@ -1,0 +1,15 @@
+.git
+.github
+.claude
+node_modules
+data
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+.env
+test
+server
+Dockerfile
+.dockerignore
+CLAUDE.md
+.DS_Store
