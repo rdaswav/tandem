@@ -6,6 +6,7 @@ A small private web app for two people. Node 24, Fastify, built-in SQLite, serve
 
 - Run `./scripts/verify.sh` before committing. `./scripts/verify.sh --fast` runs the tests only.
 - One task per commit, message `T01: summary` (task id, colon, short summary).
+- After a passing task, push its commit to `origin main` (the private rdaswav/tandem repo). Scan the unpushed commits for secrets and LAN addresses first. Never force-push, and never push another branch or tag.
 - `src/core/` never imports from `src/routes/` or `src/views/`. Routes do no SQL; they call `core/`.
 - Only `src/core/rounds.js` may read the `answers` table. Everything else goes through `rounds.answersVisibleTo`.
 - No colour values (hex or `rgb(`) outside `public/tokens.css`.
