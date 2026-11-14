@@ -14,6 +14,7 @@ import { checkinRoutes } from './routes/checkin.js';
 import { homeRoutes } from './routes/home.js';
 import { ideasRoutes } from './routes/ideas.js';
 import { momentsRoutes } from './routes/moments.js';
+import { talksRoutes } from './routes/talks.js';
 import { messagePage } from './views/layout.js';
 
 const PUBLIC_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
@@ -84,6 +85,7 @@ export function buildApp({ db, clock, config }) {
   momentsRoutes(app);
   ideasRoutes(app);
   agreementsRoutes(app);
+  talksRoutes(app);
 
   return app;
 }
