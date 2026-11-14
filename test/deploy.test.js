@@ -189,11 +189,13 @@ test('the image carries what the app needs and nothing it should not', () => {
   const copied = [...dockerfile.matchAll(/^COPY (?!--from)(\S+(?: \S+)*?) \S+$/gm)].flatMap((m) => m[1].split(' '));
   assert.deepEqual(
     copied.sort(),
-    ['migrations', 'package-lock.json', 'package.json', 'prompts', 'public', 'scripts/create-users.mjs', 'src'].sort(),
+    ['migrations', 'package-lock.json', 'package.json', 'prompts', 'public', 'scripts/create-users.mjs', 'scripts/reset-passphrase.mjs', 'src'].sort(),
   );
   for (const source of copied) assert.ok(fs.existsSync(path.join(ROOT, source)), `${source} exists`);
   assert.equal(/COPY \. /.test(dockerfile), false, 'no blanket copy of the whole folder');
-  assert.doesNotMatch(dockerfile, /passphrase|secret|token|password/i);
+  // No secret is baked in. The file name of the reset script is the one place the word may appear.
+  const withoutScriptCopies = dockerfile.replace(/^COPY scripts\/\S+\.mjs \.\/scripts\/\S+\.mjs$/gm, '');
+  assert.doesNotMatch(withoutScriptCopies, /passphrase|secret|token|password/i);
 });
 
 test('.dockerignore keeps git, dependencies, local data and tests out of the build', () => {

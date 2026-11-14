@@ -115,6 +115,33 @@ export function completeSetup(db, clock, token, passphrase) {
   });
 }
 
+// For a forgotten passphrase or a lost phone, run by whoever looks after the
+// server. In one step: the person's passphrase is cleared, every session of
+// theirs is deleted (so every phone is signed out), their failed attempts are
+// cleared and a new single-use setup token is stored as a hash. The raw token
+// is returned once. The other person is not touched.
+export function issueResetLink(db, clock, name) {
+  const wanted = typeof name === 'string' ? name.trim().toLowerCase() : '';
+  if (!wanted) return { ok: false, error: 'not_found' };
+  return inTransaction(db, () => {
+    const matches = db
+      .prepare('SELECT id, display_name FROM users')
+      .all()
+      .filter((row) => row.display_name.trim().toLowerCase() === wanted);
+    if (matches.length === 0) return { ok: false, error: 'not_found' };
+    if (matches.length > 1) return { ok: false, error: 'ambiguous' };
+    const user = matches[0];
+    const setupToken = newToken();
+    db.prepare('UPDATE users SET pass_hash = NULL, pass_salt = NULL, setup_token_hash = ? WHERE id = ?').run(
+      sha256(setupToken),
+      user.id,
+    );
+    db.prepare('DELETE FROM sessions WHERE user_id = ?').run(user.id);
+    db.prepare('DELETE FROM signin_attempts WHERE user_id = ?').run(user.id);
+    return { ok: true, displayName: user.display_name, setupToken };
+  });
+}
+
 // ---- sign in --------------------------------------------------------------
 
 // At most MAX_FAILED_ATTEMPTS wrong passphrases per user in any sliding

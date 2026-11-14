@@ -20,6 +20,7 @@ COPY migrations ./migrations
 COPY prompts ./prompts
 COPY public ./public
 COPY scripts/create-users.mjs ./scripts/create-users.mjs
+COPY scripts/reset-passphrase.mjs ./scripts/reset-passphrase.mjs
 
 # The data folder is made here and owned by the node user, so a new named volume
 # mounted over it starts out writable by the user the app runs as.

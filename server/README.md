@@ -87,6 +87,14 @@ The container restarts by itself after a reboot of the NAS.
 
 Whoever looks after the NAS can open the database file, so they could in principle read answers that are still hidden. The app hides unread check-in answers from the other person, but it does not protect them from the person who runs the server. The third welcome page says so in plain words. If that ever feels wrong for the two of you, talk about it before using the app, not after.
 
-## Known gap: a forgotten passphrase
+## A forgotten passphrase or a lost phone
 
-There is no way yet to reset a passphrase from inside the app. If one is forgotten, the person who looks after the NAS has to make a new setup link for them by hand. A small reset script is a sensible follow-up task.
+There is no reset inside the app. The person who looks after the NAS makes a new setup link for one person:
+
+```bash
+ssh nas "sudo /usr/local/bin/docker exec tandem node scripts/reset-passphrase.mjs '<name>'"
+```
+
+It prints one line, `/setup/<a long random string>`. Send it to that person, who opens it on their phone and chooses a new passphrase. A reset link works once.
+
+This does three things at once: the old passphrase stops working, that person is signed out on every phone, and any run of wrong guesses against them is cleared. The other person is not touched. Use it for a lost or stolen phone as well as a forgotten passphrase. It refuses if no one, or more than one person, has that name.
