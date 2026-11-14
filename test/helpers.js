@@ -1,15 +1,8 @@
 import { openDb } from '../src/db.js';
 import { buildApp } from '../src/server.js';
+import { fakeClock } from '../src/core/clock.js';
 
-export function fakeClock(iso = '2026-11-15T01:00:00Z') {
-  let current = new Date(iso);
-  return {
-    now: () => new Date(current),
-    set: (next) => {
-      current = new Date(next);
-    },
-  };
-}
+export { fakeClock };
 
 export function makeApp(overrides = {}) {
   const db = openDb(':memory:');
