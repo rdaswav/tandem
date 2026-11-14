@@ -11,6 +11,7 @@ import { csrfValid, sessionFromCookie } from './core/auth.js';
 import { COOKIE_NAME, authRoutes } from './routes/auth.js';
 import { checkinRoutes } from './routes/checkin.js';
 import { homeRoutes } from './routes/home.js';
+import { momentsRoutes } from './routes/moments.js';
 import { messagePage } from './views/layout.js';
 
 const PUBLIC_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
@@ -78,6 +79,7 @@ export function buildApp({ db, clock, config }) {
   authRoutes(app);
   homeRoutes(app);
   checkinRoutes(app);
+  momentsRoutes(app);
 
   return app;
 }
