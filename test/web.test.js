@@ -257,8 +257,10 @@ test('the setup link flow: mismatch, too short, success, then it is used up', as
 
   const ok = await app.inject({ method: 'POST', url, ...form({ passphrase: PASSPHRASES.a, confirm: PASSPHRASES.a }) });
   assert.equal(ok.statusCode, 303);
-  assert.equal(ok.headers.location, '/');
+  assert.equal(ok.headers.location, '/welcome', 'a brand-new person is welcomed first (T16)');
   const cookie = String(ok.headers['set-cookie']).split(';')[0];
+  const welcome = await app.inject({ method: 'GET', url: '/welcome', headers: { cookie } });
+  assert.equal(welcome.statusCode, 200);
   const home = await app.inject({ method: 'GET', url: '/', headers: { cookie } });
   assert.equal(home.statusCode, 200);
 

@@ -92,7 +92,7 @@ export function buildApp({ db, clock, config }) {
 
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isMain) {
-  const config = { ...loadConfig(process.env), log: true };
+  const config = { ...loadConfig(process.env), serverOwner: process.env.SERVER_OWNER || null, log: true };
   fs.mkdirSync(config.dataDir, { recursive: true });
   const db = openDb(path.join(config.dataDir, 'tandem.sqlite'));
   const clock = { now: () => new Date() };

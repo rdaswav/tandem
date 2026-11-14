@@ -86,6 +86,7 @@ ${talkBlock(talk, user, csrf)}
 ${agreementsBlock(agreements)}
 ${fromTheLogBlock(fromLog)}
 <p class="foot"><a class="btn" href="/moments#new-moment">Add a moment</a> <a class="btn" href="/ideas">Add an idea</a></p>
+<p class="small"><a href="/welcome">How this works</a></p>
 <form method="post" action="/signout">
 <input type="hidden" name="_csrf" value="${csrf}">
 <button class="btn btn-quiet" type="submit">Sign out</button>

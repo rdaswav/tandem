@@ -1,7 +1,7 @@
 import { openDb } from '../src/db.js';
 import { buildApp } from '../src/server.js';
 import { fakeClock } from '../src/core/clock.js';
-import { completeSetup, createUsers, signIn } from '../src/core/auth.js';
+import { completeSetup, createUsers, markWelcomed, signIn } from '../src/core/auth.js';
 import { COOKIE_NAME } from '../src/routes/auth.js';
 
 export { fakeClock };
@@ -31,6 +31,12 @@ export function makeAppWithUsers(overrides = {}) {
   const [a, b] = createUsers(ctx.db, ctx.clock, names[0], names[1]);
   completeSetup(ctx.db, ctx.clock, a.setupToken, PASSPHRASES.a);
   completeSetup(ctx.db, ctx.clock, b.setupToken, PASSPHRASES.b);
+  // Most tests are not about the welcome pages, so both people start out welcomed.
+  // Pass { welcomed: false } to start as someone brand new.
+  if (overrides.welcomed !== false) {
+    markWelcomed(ctx.db, ctx.clock, a.id);
+    markWelcomed(ctx.db, ctx.clock, b.id);
+  }
   const users = { a, b };
 
   function login(slot) {

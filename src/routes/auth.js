@@ -1,5 +1,14 @@
-import { completeSetup, createSession, listUsers, signIn, signOut, SESSION_DAYS } from '../core/auth.js';
+import {
+  completeSetup,
+  createSession,
+  listUsers,
+  markWelcomed,
+  signIn,
+  signOut,
+  SESSION_DAYS,
+} from '../core/auth.js';
 import { setupPage, signInPage } from '../views/auth.js';
+import { WELCOME_PAGES, welcomePage } from '../views/welcome.js';
 
 export const COOKIE_NAME = 'tandem_session';
 
@@ -27,6 +36,11 @@ const SETUP_ERRORS = {
 export function authRoutes(app) {
   const readyUsers = () => listUsers(app.db).filter((u) => u.ready);
 
+  // Who looks after the server, for the third welcome page: the SERVER_OWNER
+  // setting if there is one, otherwise the first person.
+  const serverOwner = () =>
+    app.config.serverOwner || listUsers(app.db).find((u) => u.slot === 'a')?.displayName || 'someone at home';
+
   app.get('/signin', async (req, reply) => {
     if (req.session) return reply.redirect('/', 303);
     return reply.html(signInPage({ users: readyUsers() }));
@@ -48,7 +62,8 @@ export function authRoutes(app) {
       );
     }
     setSessionCookie(reply, result.session);
-    return reply.redirect('/', 303);
+    // Someone who has not been welcomed yet is welcomed first, once.
+    return reply.redirect(result.user.welcomedAt ? '/' : '/welcome', 303);
   });
 
   app.post('/signout', async (req, reply) => {
@@ -69,6 +84,18 @@ export function authRoutes(app) {
     if (!result.ok) return fail(result.error);
 
     setSessionCookie(reply, createSession(app.db, app.clock, result.user.id));
+    return reply.redirect('/welcome', 303); // a brand-new person has not been welcomed
+  });
+
+  app.get('/welcome', async (req, reply) => {
+    const asked = Number(req.query?.page);
+    const n = Number.isInteger(asked) && asked >= 1 && asked <= WELCOME_PAGES ? asked : 1;
+    return reply.html(welcomePage({ csrf: req.session.csrf, n, serverOwner: serverOwner() }));
+  });
+
+  // Skip or finish: either way this person has been welcomed, and it is saved once.
+  app.post('/welcome/done', async (req, reply) => {
+    markWelcomed(app.db, app.clock, req.session.user.id);
     return reply.redirect('/', 303);
   });
 }
