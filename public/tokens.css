@@ -1,0 +1,23 @@
+/* The only place colour values live. Light first, dark under the media query. */
+:root {
+  color-scheme: light dark;
+  --bg: #FAF8F5;
+  --surface: #FFFFFF;
+  --line: #E6E1DA;
+  --text: #1F1B16;
+  --text-muted: #6B645B;
+  --accent: #2F6F6A;
+  --on-accent: #FFFFFF;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121110;
+    --surface: #1C1A18;
+    --line: #34302B;
+    --text: #F2EEE8;
+    --text-muted: #A39B90;
+    --accent: #7CC4BD;
+    --on-accent: #10201F;
+  }
+}
