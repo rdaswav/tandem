@@ -64,13 +64,25 @@ Change the code, commit, and run `./scripts/deploy.sh` again. The data stays bec
 
 ## Backup
 
-The data is one SQLite file in the Docker volume. Point Hyper Backup at:
+The app keeps one consistent copy of its data in a `backup` folder inside the data volume. It writes one at start-up and then once a day, using SQLite's own copy, so it is whole even while someone is using the app. There is always just the one copy: each new one replaces the last.
+
+Point Hyper Backup at the folder, not at the live database:
 
 ```
-/volume1/@docker/volumes/tandem_data/_data
+/volume1/@docker/volumes/tandem_data/_data/backup
 ```
 
-A file copy is enough here: the app is used by two people and writes very little. Each person can also download everything they are allowed to see from the **Export** link at the foot of Home.
+Do not back up the live file `tandem.sqlite` on its own. While the app runs, its newest writes can sit in the `tandem.sqlite-wal` file, so a plain copy of the main file can miss them or be half written.
+
+The snapshot holds everything the live database does, including answers that are still hidden from the other person, so treat it the same way: only the two of you and whoever looks after the NAS should be able to read it. Each person can also download everything they are allowed to see from the **Export** link at the foot of Home.
+
+To restore from the snapshot (this replaces what is in the database now, so it is for when the data is lost or wrong):
+
+```bash
+ssh nas "sudo /usr/local/bin/docker stop tandem"
+ssh nas "sudo cp /volume1/@docker/volumes/tandem_data/_data/backup/tandem-snapshot.sqlite /volume1/@docker/volumes/tandem_data/_data/tandem.sqlite && sudo rm -f /volume1/@docker/volumes/tandem_data/_data/tandem.sqlite-wal /volume1/@docker/volumes/tandem_data/_data/tandem.sqlite-shm"
+ssh nas "sudo /usr/local/bin/docker start tandem"
+```
 
 ## Looking after it
 

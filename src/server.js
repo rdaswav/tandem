@@ -16,6 +16,7 @@ import { homeRoutes } from './routes/home.js';
 import { ideasRoutes } from './routes/ideas.js';
 import { momentsRoutes } from './routes/moments.js';
 import { talksRoutes } from './routes/talks.js';
+import { scheduleSnapshots } from './core/backup.js';
 import { messagePage } from './views/layout.js';
 
 const PUBLIC_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
@@ -104,6 +105,8 @@ if (isMain) {
   fs.mkdirSync(config.dataDir, { recursive: true });
   const db = openDb(path.join(config.dataDir, 'tandem.sqlite'));
   const clock = { now: () => new Date() };
+  // A snapshot now and then one a day, for Hyper Backup. Logged as a word only.
+  scheduleSnapshots({ db, dataDir: config.dataDir, clock, log: (line) => console.log(line) });
   const app = buildApp({ db, clock, config });
   await app.listen({ port: config.port, host: '0.0.0.0' });
 }
