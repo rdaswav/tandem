@@ -91,6 +91,7 @@ ${fromTheLogBlock(fromLog)}
 <p class="links foot"><a class="link-action" href="/moments#new-moment">Add a moment</a> <a class="link-action" href="/ideas">Add an idea</a></p>
 <div class="links-quiet">
 <a href="/welcome">How this works</a>
+<a href="/export.json" download>Export</a>
 <form method="post" action="/signout">
 <input type="hidden" name="_csrf" value="${csrf}">
 <button class="btn btn-quiet" type="submit">Sign out</button>
