@@ -131,7 +131,8 @@ export function talksRoutes(app) {
     // A second tap on Next, or a page that was already out of date, must not
     // skip a step: Next only counts if it was pressed on the step now showing.
     const body = bodyOf(req);
-    if (action === 'advance' && body.step !== undefined && String(talk.step) !== String(body.step)) {
+    const plain = (value) => (typeof value === 'string' || typeof value === 'number' ? String(value) : null);
+    if (action === 'advance' && body.step !== undefined && String(talk.step) !== plain(body.step)) {
       return reply.redirect(`/talks/${talkId}`, 303);
     }
 

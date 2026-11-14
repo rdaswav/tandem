@@ -49,7 +49,9 @@ export function authRoutes(app) {
   app.post('/signin', async (req, reply) => {
     const body = req.body && typeof req.body === 'object' ? req.body : {};
     const users = readyUsers();
-    const chosen = users.find((u) => String(u.id) === String(body.user));
+    // Only a plain value can name a person; anything else names nobody.
+    const picked = typeof body.user === 'string' || typeof body.user === 'number' ? String(body.user) : null;
+    const chosen = users.find((u) => String(u.id) === picked);
     const result = chosen
       ? signIn(app.db, app.clock, chosen.id, body.passphrase)
       : { ok: false, error: 'invalid' };

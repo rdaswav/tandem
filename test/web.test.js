@@ -374,3 +374,26 @@ test('app.css uses tokens only: no colour values in it', () => {
   const appCss = fs.readFileSync(path.join(ROOT, 'public', 'app.css'), 'utf8');
   assert.doesNotMatch(appCss, /#[0-9A-Fa-f]{3,8}\b|rgba?\(|hsla?\(/);
 });
+
+// ---- odd request bodies ---------------------------------------------------
+
+test('an object where a plain value belongs is refused, not a server error', async () => {
+  const { app, db, users, login } = makeAppWithUsers();
+  const json = (url, body, headers = {}) =>
+    app.inject({ method: 'POST', url, payload: JSON.stringify(body), headers: { 'content-type': 'application/json', ...headers } });
+
+  const signin = await json('/signin', { user: { toString: 'x' }, passphrase: PASSPHRASES.a });
+  assert.equal(signin.statusCode, 401);
+  const asArray = await json('/signin', { user: [String(users.a.id)], passphrase: PASSPHRASES.a });
+  assert.equal(asArray.statusCode, 401);
+
+  const a = login('a');
+  const b = login('b');
+  await app.inject({ method: 'POST', url: '/talks', ...form({ _csrf: a.csrf, topic: 'Where the bikes go' }, a.headers) });
+  const id = db.prepare('SELECT id FROM talks').get().id;
+  await app.inject({ method: 'POST', url: `/talks/${id}/accept`, ...form({ _csrf: b.csrf }, b.headers) });
+  await app.inject({ method: 'POST', url: `/talks/${id}/start`, ...form({ _csrf: a.csrf }, a.headers) });
+  const advance = await json(`/talks/${id}/advance`, { _csrf: a.csrf, step: { toString: 'x' } }, a.headers);
+  assert.equal(advance.statusCode, 303);
+  assert.equal(db.prepare('SELECT step FROM talks WHERE id = ?').get(id).step, 1, 'a step that is not a plain value does not move the talk');
+});
