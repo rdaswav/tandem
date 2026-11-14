@@ -86,8 +86,51 @@ ${isPast ? html`<p class="small"><a href="/checkin/past">Earlier check-ins</a></
   });
 }
 
+// Open agreements to glance at before reading. Text and who it is for, nothing else.
+function lookingBack(openAgreements) {
+  if (openAgreements.length === 0) return '';
+  return html`<h2>Looking back</h2>
+<div class="card">${openAgreements.map((g) => html`<p>${g.body} <span class="muted small">· ${g.ownerLabel}</span></p>`)}</div>`;
+}
+
+// The box at the end of reading together. form: { maxLength, values: { body, owner }, error }.
+function weekThing({ csrf, names, form }) {
+  const option = (value, label) =>
+    html`<option value="${value}"${form.values.owner === value ? ' selected' : ''}>${label}</option>`;
+  return html`${form.error ? html`<p class="message" role="alert">${form.error}</p>` : ''}
+<form class="card" method="post" action="/checkin/agreement">
+<input type="hidden" name="_csrf" value="${csrf}">
+<div class="field">
+<label for="week-thing">One thing for the week</label>
+<input id="week-thing" type="text" name="body" value="${form.values.body}" maxlength="${form.maxLength}" autocomplete="off">
+</div>
+<div class="field">
+<label for="week-owner">Who is it for?</label>
+<select id="week-owner" name="owner">
+${option('both', 'Both')}
+${option('a', names.a)}
+${option('b', names.b)}
+</select>
+</div>
+<button class="btn btn-primary" type="submit">Add</button>
+</form>`;
+}
+
 // Both sets side by side, slot a first. rows holds every answer for the round.
-export function revealedPage({ user, prompts, rows, names, weekStart = null, isPast = false }) {
+// For this week's round, also pass csrf, openAgreements and agreementForm: they
+// add the Looking back list and the One thing for the week box. Earlier weeks
+// are read only and leave them out.
+export function revealedPage({
+  user,
+  prompts,
+  rows,
+  names,
+  weekStart = null,
+  isPast = false,
+  csrf = null,
+  openAgreements = [],
+  agreementForm = null,
+}) {
   const block = (slot, promptId) => html`<p class="muted small">${names[slot]}</p>${answerText(
     rows.find((r) => r.slot === slot && r.promptId === promptId),
   )}`;
@@ -97,7 +140,9 @@ export function revealedPage({ user, prompts, rows, names, weekStart = null, isP
     current: 'checkin',
     body: html`<h1>Read together</h1>
 ${weekStart ? html`<p class="muted small">Week of ${weekLabel(weekStart)}</p>` : ''}
+${isPast ? '' : lookingBack(openAgreements)}
 ${prompts.map((p) => html`<div class="card"><h2>${p.text}</h2>${block('a', p.id)}${block('b', p.id)}</div>`)}
+${agreementForm && !isPast ? weekThing({ csrf, names, form: agreementForm }) : ''}
 ${isPast ? html`<p class="small"><a href="/checkin/past">Earlier check-ins</a></p>` : EARLIER}`,
   });
 }

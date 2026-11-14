@@ -1,3 +1,4 @@
+import { MAX_AGREEMENT_LENGTH, addAgreement, listOpen } from '../core/agreements.js';
 import { listUsers } from '../core/auth.js';
 import { promptText } from '../core/prompts.js';
 import {
@@ -11,12 +12,19 @@ import {
   submit,
 } from '../core/rounds.js';
 import { passedPage, pastListPage, revealedPage, waitingPage, writingPage } from '../views/checkin.js';
+import { messagePage } from '../views/layout.js';
 
 const WEEK_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 const MESSAGES = {
   too_long: `That answer is too long. Keep each one under ${MAX_ANSWER_LENGTH} characters.`,
   no_answers: 'Write at least one answer first, then press I\'m done.',
+};
+
+const AGREEMENT_MESSAGES = {
+  blank: 'Write something first.',
+  too_long: `That is too long. Keep it under ${MAX_AGREEMENT_LENGTH} characters.`,
+  bad_owner: 'Choose who it is for.',
 };
 
 // Who is looking, and the names to show.
@@ -53,7 +61,7 @@ function answersFromBody(round, body) {
 }
 
 // This week's page, whatever state the viewer is in.
-function renderCurrent(app, req, { values = null, error = null } = {}) {
+function renderCurrent(app, req, { values = null, error = null, agreementError = null, agreementValues = null } = {}) {
   const v = viewer(app, req);
   const round = currentRound(app);
   const state = stateFor(app, round, v.user.id);
@@ -61,7 +69,21 @@ function renderCurrent(app, req, { values = null, error = null } = {}) {
   const prompts = promptsShown(round, rows);
   const own = rows.filter((r) => r.userId === v.user.id);
 
-  if (state === 'revealed') return revealedPage({ user: v.user, prompts, rows, names: v.names });
+  if (state === 'revealed') {
+    return revealedPage({
+      user: v.user,
+      prompts,
+      rows,
+      names: v.names,
+      csrf: v.csrf,
+      openAgreements: listOpen(app),
+      agreementForm: {
+        maxLength: MAX_AGREEMENT_LENGTH,
+        error: agreementError,
+        values: agreementValues ?? { body: '', owner: 'both' },
+      },
+    });
+  }
   if (state === 'passed') return passedPage({ user: v.user, prompts, own });
   if (state === 'waiting') return waitingPage({ user: v.user, prompts, own });
 
@@ -107,6 +129,44 @@ export function checkinRoutes(app) {
       }
     }
     return reply.redirect('/checkin', 303);
+  });
+
+  // One thing for the week: an agreement that comes out of reading together.
+  // Only possible once this week's check-in has opened for the person asking.
+  // Every other state gets the same refusal, so it says nothing about the other person.
+  app.post('/checkin/agreement', async (req, reply) => {
+    const round = currentRound(app);
+    const user = req.session.user;
+    if (stateFor(app, round, user.id) !== 'revealed') {
+      return reply.html(
+        messagePage({
+          title: 'Not yet',
+          text: 'This opens once you have both finished the check-in.',
+          user,
+        }),
+        403,
+      );
+    }
+    const body = req.body && typeof req.body === 'object' ? req.body : {};
+    const result = addAgreement(app, user.id, {
+      body: body.body,
+      owner: body.owner,
+      source: 'checkin',
+      sourceId: round.id,
+    });
+    if (!result.ok) {
+      return reply.html(
+        renderCurrent(app, req, {
+          agreementError: AGREEMENT_MESSAGES[result.error] ?? 'That did not work. Try again.',
+          agreementValues: {
+            body: typeof body.body === 'string' ? body.body : '',
+            owner: typeof body.owner === 'string' && body.owner ? body.owner : 'both',
+          },
+        }),
+        400,
+      );
+    }
+    return reply.redirect('/agreements', 303);
   });
 
   app.get('/checkin/past', async (req, reply) => {
