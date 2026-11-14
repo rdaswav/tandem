@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "fixed": [
+    { "id": "appreciated", "text": "Something I appreciated about you this week" },
+    { "id": "hard", "text": "Something that was hard for me this week" },
+    { "id": "need", "text": "Something I would like more of, or need" },
+    { "id": "next", "text": "One thing I would like us to do in the coming week" }
+  ],
+  "rotating": [
+    { "id": "r01", "text": "A small thing that made me laugh this week" },
+    { "id": "r02", "text": "Somewhere I would like us to go one day" },
+    { "id": "r03", "text": "A meal I would enjoy sharing with you soon" },
+    { "id": "r04", "text": "Something I am looking forward to" },
+    { "id": "r05", "text": "A moment this week when I felt close to you" },
+    { "id": "r06", "text": "Something new I would like to try, alone or together" },
+    { "id": "r07", "text": "A song, show or book that has been on my mind" },
+    { "id": "r08", "text": "Something small that would make next week easier for me" },
+    { "id": "r09", "text": "A memory of us I have been thinking about" },
+    { "id": "r10", "text": "Something I am proud of this week, however small" },
+    { "id": "r11", "text": "A way I would like us to spend an ordinary evening" },
+    { "id": "r12", "text": "Something I learned recently" },
+    { "id": "r13", "text": "A place that feels like home to me, and why" },
+    { "id": "r14", "text": "Something I would like to say thank you for" },
+    { "id": "r15", "text": "A habit I am building or letting go of" },
+    { "id": "r16", "text": "A little plan I would like us to make for a weekend soon" }
+  ]
+}
