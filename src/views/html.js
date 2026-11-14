@@ -18,6 +18,12 @@ export function raw(value) {
   return new SafeHtml(String(value));
 }
 
+// The start of a text, for a button's accessible name: "Done, Phones away at dinner".
+export function shorten(text, max = 48) {
+  const chars = [...String(text).replace(/\s+/g, ' ').trim()];
+  return chars.length <= max ? chars.join('') : `${chars.slice(0, max).join('').trimEnd()}…`;
+}
+
 export function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (ch) => ESCAPES[ch]);
 }

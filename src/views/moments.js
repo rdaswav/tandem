@@ -1,4 +1,4 @@
-import { html, raw } from './html.js';
+import { html, raw, shorten } from './html.js';
 import { page } from './layout.js';
 
 const MONTHS = [
@@ -48,7 +48,7 @@ function entry(m, { user, csrf, today, editing, maxLength }) {
   const values = isEditing ? editing.values : { happenedOn: m.happenedOn, body: m.body };
   const controls = own
     ? html`<div class="row-actions"><details${isEditing ? raw(' open') : ''}>
-<summary class="muted small">Edit</summary>
+<summary class="muted small" aria-label="Edit, ${shorten(m.body)}">Edit</summary>
 <form method="post" action="/moments/${m.id}/edit">
 <input type="hidden" name="_csrf" value="${csrf}">
 <div class="field">
@@ -59,12 +59,12 @@ function entry(m, { user, csrf, today, editing, maxLength }) {
 <label for="b-${m.id}">What happened</label>
 <textarea id="b-${m.id}" name="body" rows="3" maxlength="${maxLength}">${values.body}</textarea>
 </div>
-<button class="btn" type="submit">Save</button>
+<button class="btn" type="submit" aria-label="Save, ${shorten(m.body)}">Save</button>
 </form>
 </details>
 <form method="post" action="/moments/${m.id}/remove">
 <input type="hidden" name="_csrf" value="${csrf}">
-<button class="btn btn-quiet pad" type="submit">Remove</button>
+<button class="btn btn-quiet pad" type="submit" aria-label="Remove, ${shorten(m.body)}">Remove</button>
 </form></div>`
     : '';
   return html`<div class="card" id="m-${m.id}">

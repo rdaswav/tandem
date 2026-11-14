@@ -1,4 +1,4 @@
-import { html } from './html.js';
+import { html, shorten } from './html.js';
 import { page } from './layout.js';
 
 // The open list shows the text and who it is for, in one card of rows. No
@@ -9,11 +9,11 @@ function openRow(g, csrf) {
 <div class="row-actions">
 <form method="post" action="/agreements/${g.id}/done">
 <input type="hidden" name="_csrf" value="${csrf}">
-<button class="btn btn-quiet pad" type="submit">Done</button>
+<button class="btn btn-quiet pad" type="submit" aria-label="Done, ${shorten(g.body)}">Done</button>
 </form>
 <form method="post" action="/agreements/${g.id}/drop">
 <input type="hidden" name="_csrf" value="${csrf}">
-<button class="btn btn-quiet pad" type="submit">Drop</button>
+<button class="btn btn-quiet pad" type="submit" aria-label="Drop, ${shorten(g.body)}">Drop</button>
 </form>
 </div>
 </div>`;

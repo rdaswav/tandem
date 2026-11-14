@@ -1,4 +1,4 @@
-import { html } from './html.js';
+import { html, shorten } from './html.js';
 import { page } from './layout.js';
 import { momentTabs } from './moments.js';
 
@@ -9,13 +9,13 @@ function openCard(idea, { user, csrf }) {
 <div class="inline">
 <form method="post" action="/ideas/${idea.id}/done">
 <input type="hidden" name="_csrf" value="${csrf}">
-<button class="btn" type="submit">Done</button>
+<button class="btn" type="submit" aria-label="Done, ${shorten(idea.body)}">Done</button>
 </form>
 ${
   idea.authorId === user.id
     ? html`<form method="post" action="/ideas/${idea.id}/remove">
 <input type="hidden" name="_csrf" value="${csrf}">
-<button class="btn btn-quiet pad" type="submit">Remove</button>
+<button class="btn btn-quiet pad" type="submit" aria-label="Remove, ${shorten(idea.body)}">Remove</button>
 </form>`
     : ''
 }

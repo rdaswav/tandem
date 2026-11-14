@@ -271,7 +271,7 @@ test('only your own moments have Edit and Remove', async () => {
   assert.ok(page.body.includes(`action="/moments/${mine}/remove"`));
   assert.equal(page.body.includes(`/moments/${theirs}/edit`), false);
   assert.equal(page.body.includes(`/moments/${theirs}/remove`), false);
-  assert.match(page.body, /<summary class="muted small">Edit<\/summary>/);
+  assert.match(page.body, /<summary class="muted small" aria-label="Edit, [^"]+">Edit<\/summary>/);
   assert.match(page.body, />Remove<\/button>/);
 });
 
