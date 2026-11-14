@@ -311,10 +311,11 @@ test('Home has one h1, the five links in order and Home marked as current', asyn
   assert.equal(res.statusCode, 200);
   assert.equal((res.body.match(/<h1[ >]/g) ?? []).length, 1);
 
-  const links = [...res.body.matchAll(/<a href="([^"]+)"( aria-current="page")?>([^<]+)<\/a>/g)];
+  const links = [...res.body.matchAll(/<a href="([^"]+)"(?: aria-label="([^"]+)")?( aria-current="page")?>([^<]+)<\/a>/g)];
   const bar = links.filter((m) => ['/', '/checkin', '/moments', '/agreements', '/talks'].includes(m[1]));
-  assert.deepEqual(bar.map((m) => m[3]), ['Home', 'Check-in', 'Moments', 'Agreements', 'Talks']);
-  assert.deepEqual(bar.map((m) => Boolean(m[2])), [true, false, false, false, false]);
+  assert.deepEqual(bar.map((m) => m[4]), ['Home', 'Check-in', 'Moments', 'Agree', 'Talks']);
+  assert.deepEqual(bar.map((m) => m[2] ?? null), [null, null, null, 'Agreements', null], 'the short label keeps its full name for screen readers');
+  assert.deepEqual(bar.map((m) => Boolean(m[3])), [true, false, false, false, false]);
 
   assert.ok(res.body.includes(`name="_csrf" value="${s.csrf}"`), 'the sign out form carries the CSRF token');
   assert.match(res.body, /<link rel="manifest" href="\/public\/manifest\.webmanifest">/);

@@ -1,23 +1,24 @@
-/* The only place colour values live. Light first, dark under the media query. */
+/* The only place colour values live. Light first, dark under the media query.
+   Values come from the Tandem design system (Claude Design canvas, 14 Nov 2026). */
 :root {
   color-scheme: light dark;
-  --bg: #FAF8F5;
+  --bg: #FBF6F3;
   --surface: #FFFFFF;
-  --line: #E6E1DA;
-  --text: #1F1B16;
-  --text-muted: #6B645B;
-  --accent: #2F6F6A;
+  --line: #EBDDD6;
+  --text: #2E2226;
+  --text-muted: #7A6A6C;
+  --accent: #A64B63;
   --on-accent: #FFFFFF;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #121110;
-    --surface: #1C1A18;
-    --line: #34302B;
-    --text: #F2EEE8;
-    --text-muted: #A39B90;
-    --accent: #7CC4BD;
-    --on-accent: #10201F;
+    --bg: #1A1416;
+    --surface: #251D20;
+    --line: #43353A;
+    --text: #F6EDEA;
+    --text-muted: #B3A2A4;
+    --accent: #E8A0B2;
+    --on-accent: #2E1620;
   }
 }

@@ -1,20 +1,21 @@
 import { html } from './html.js';
 import { page } from './layout.js';
 
-// The open list shows the text and who it is for. No dates, no ages, no counts,
-// and every card looks the same however old it is.
-function openCard(g, csrf) {
-  return html`<div class="card">
-<p>${g.body}</p>
-<p class="muted small">${g.ownerLabel}</p>
+// The open list shows the text and who it is for, in one card of rows. No
+// dates, no ages, no counts, and every row looks the same however old it is.
+function openRow(g, csrf) {
+  return html`<div class="row">
+<div class="row-main"><span>${g.body}</span><span class="muted small">${g.ownerLabel}</span></div>
+<div class="row-actions">
 <form method="post" action="/agreements/${g.id}/done">
 <input type="hidden" name="_csrf" value="${csrf}">
-<button class="btn" type="submit">Done</button>
+<button class="btn btn-quiet pad" type="submit">Done</button>
 </form>
 <form method="post" action="/agreements/${g.id}/drop">
 <input type="hidden" name="_csrf" value="${csrf}">
-<button class="btn btn-quiet" type="submit">Drop</button>
+<button class="btn btn-quiet pad" type="submit">Drop</button>
 </form>
+</div>
 </div>`;
 }
 
@@ -49,7 +50,7 @@ ${option('b', names.b)}
 ${
   agreements.length === 0
     ? html`<p class="muted">No agreements yet. Add the first one above.</p>`
-    : html`<h2>Open</h2>${agreements.map((g) => openCard(g, csrf))}`
+    : html`<h2>Open</h2><div class="list">${agreements.map((g) => openRow(g, csrf))}</div>`
 }
 <p class="small foot"><a href="/agreements/earlier">Earlier</a></p>`,
   });
@@ -65,12 +66,9 @@ export function earlierPage({ user, agreements }) {
 ${
   agreements.length === 0
     ? html`<p class="muted">Nothing here yet.</p>`
-    : agreements.map(
-        (g) => html`<div class="card">
-<p class="muted">${g.body}</p>
-<p class="muted small">${g.ownerLabel} · ${g.state === 'done' ? 'Done' : 'Dropped'}</p>
-</div>`,
-      )
+    : html`<div class="list">${agreements.map(
+        (g) => html`<div class="row row-plain row-main"><span class="muted">${g.body}</span><span class="muted small">${g.ownerLabel} · ${g.state === 'done' ? 'Done' : 'Dropped'}</span></div>`,
+      )}</div>`
 }
 <p class="small"><a href="/agreements">Back to agreements</a></p>`,
   });

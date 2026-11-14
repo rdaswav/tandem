@@ -6,6 +6,7 @@ function openCard(idea, { user, csrf }) {
   return html`<div class="card">
 <p>${idea.body}</p>
 <p class="muted small">${idea.authorName}</p>
+<div class="inline">
 <form method="post" action="/ideas/${idea.id}/done">
 <input type="hidden" name="_csrf" value="${csrf}">
 <button class="btn" type="submit">Done</button>
@@ -14,10 +15,11 @@ ${
   idea.authorId === user.id
     ? html`<form method="post" action="/ideas/${idea.id}/remove">
 <input type="hidden" name="_csrf" value="${csrf}">
-<button class="btn btn-quiet" type="submit">Remove</button>
+<button class="btn btn-quiet pad" type="submit">Remove</button>
 </form>`
     : ''
 }
+</div>
 </div>`;
 }
 

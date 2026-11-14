@@ -198,7 +198,7 @@ test('it can be opened again from a small link at the foot of Home, and finishin
   assert.equal(first, '2026-11-18T02:00:00.000Z');
 
   const home = await getAs(ctx, headers, '/');
-  assert.match(home.body, /<p class="small"><a href="\/welcome">How this works<\/a><\/p>/);
+  assert.match(home.body, /<div class="links-quiet">\s*<a href="\/welcome">How this works<\/a>/);
   assert.ok(home.body.indexOf('How this works') > home.body.indexOf('Add a moment'), 'at the foot');
   assert.ok(home.body.indexOf('How this works') < home.body.indexOf('Sign out'));
 

@@ -40,7 +40,7 @@ function block(body, heading) {
   const start = body.indexOf(`<h2>${heading}</h2>`);
   if (start === -1) return null;
   const rest = body.slice(start + heading.length + 9);
-  const end = rest.search(/<h2>|<p class="foot">/);
+  const end = rest.search(/<h2>|<p class="links foot">/);
   return words(end === -1 ? rest : rest.slice(0, end));
 }
 
@@ -62,8 +62,8 @@ test('with nothing yet, Home has the check-in block and the quick links, and not
   for (const heading of ['Talk', 'Agreements', 'From the log']) {
     assert.equal(res.body.includes(`<h2>${heading}</h2>`), false, `${heading} is left out when empty`);
   }
-  assert.match(res.body, /<a class="btn" href="\/moments#new-moment">Add a moment<\/a>/);
-  assert.match(res.body, /<a class="btn" href="\/ideas">Add an idea<\/a>/);
+  assert.match(res.body, /<a class="link-action" href="\/moments#new-moment">Add a moment<\/a>/);
+  assert.match(res.body, /<a class="link-action" href="\/ideas">Add an idea<\/a>/);
   assert.ok(res.body.includes(`name="_csrf" value="${ctx.s.a.csrf}"`));
   assert.match(res.body, /action="\/signout"/);
 });

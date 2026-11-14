@@ -139,7 +139,7 @@ ${talk.hope ? html`<p class="muted">${isProposer ? 'What you hope for' : `What $
 ${
   isProposer
     ? act('withdraw', 'Withdraw', 'btn-quiet')
-    : html`${act('accept', "Yes, let's", 'btn-primary')}${act('not_now', 'Not now', 'btn-quiet')}`
+    : html`<div class="actions">${act('accept', "Yes, let's", 'btn-primary')}${act('not_now', 'Not now')}</div>`
 }
 ${BACK}`);
 
@@ -154,14 +154,18 @@ ${BACK}`);
       const second = names[talk.firstSpeaker === 'a' ? 'b' : 'a'];
       const { heading, body } = stepContent(talk.step, first, second);
       const timed = talk.step === 2 || talk.step === 4;
-      return wrap(html`<p class="muted small">Talk: ${talk.topic} · Step ${talk.step} of 7</p>
+      return wrap(html`<div class="talk-step">
+<p class="muted small">Talk: ${talk.topic} · Step ${talk.step} of 7</p>
 <h1>${heading}</h1>
 <p>${body}</p>
 ${timed ? raw('<div id="timer" data-seconds="180"></div>') : ''}
 ${talk.step === 7 ? html`${agreedList(agreements)}${agreementForm({ talk, csrf, names, form, maxLength: maxAgreement })}` : ''}
 ${act('advance', talk.step === 7 ? 'Finish' : 'Next', 'btn-primary', html`<input type="hidden" name="step" value="${talk.step}">`)}
+<div class="split">
 ${act('pause', 'Pause', 'btn-quiet')}
 ${act('end', 'End the talk', 'btn-quiet')}
+</div>
+</div>
 ${timed ? raw('<script src="/public/talk.js" defer></script>') : ''}`);
     }
 

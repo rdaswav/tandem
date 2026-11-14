@@ -22,9 +22,9 @@ function mainText(body) {
   return main.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-// The open-list cards, with the text and ids blanked so two cards can be compared.
+// The open-list rows, with the text and ids blanked so two rows can be compared.
 function cardShapes(body, texts) {
-  return [...body.matchAll(/<div class="card">([\s\S]*?)<\/div>/g)].map((m) => {
+  return [...body.matchAll(/<div class="row">([\s\S]*?)<\/form>\n<\/div>\n<\/div>/g)].map((m) => {
     let shape = m[1].replace(/agreements\/\d+\//g, 'agreements/N/');
     for (const t of texts) shape = shape.split(t).join('TEXT');
     return shape;
@@ -39,7 +39,7 @@ test('the page has one h1, Agreements current, the add form and a link to Earlie
   assert.equal(res.statusCode, 200);
   assert.equal((res.body.match(/<h1[ >]/g) ?? []).length, 1);
   assert.match(res.body, /<h1>Agreements<\/h1>/);
-  assert.match(res.body, /<a href="\/agreements" aria-current="page">Agreements<\/a>/);
+  assert.match(res.body, /<a href="\/agreements" aria-label="Agreements" aria-current="page">Agree<\/a>/);
   assert.match(res.body, /<label for="agreement">What did you agree\?<\/label>/);
   assert.match(res.body, /<input id="agreement" type="text" name="body"[^>]*maxlength="300"/);
   assert.match(res.body, /<label for="owner">Who is it for\?<\/label>/);
@@ -76,9 +76,9 @@ test('adding agreements shows them to both people, oldest first, with who they a
     assert.ok(at('Phones away at dinner') > -1);
     assert.ok(at('Phones away at dinner') < at('Book the dentist'));
     assert.ok(at('Book the dentist') < at('Plan the weekend away'));
-    assert.match(page.body, /<p class="muted small">Both<\/p>/);
-    assert.match(page.body, /<p class="muted small">Ada<\/p>/);
-    assert.match(page.body, /<p class="muted small">Bo<\/p>/);
+    assert.match(page.body, /<span class="muted small">Both<\/span>/);
+    assert.match(page.body, /<span class="muted small">Ada<\/span>/);
+    assert.match(page.body, /<span class="muted small">Bo<\/span>/);
   }
   const stored = listOpen(ctx);
   assert.deepEqual(stored.map((g) => [g.source, g.createdBy]), [['direct', ctx.a], ['direct', ctx.a], ['direct', ctx.b]]);

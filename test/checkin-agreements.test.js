@@ -174,8 +174,8 @@ test('Looking back lists the open agreements, and only those, with who they are 
     const page = await get(ctx, who, '/checkin');
     const text = section(page.body, 'Looking back');
     assert.ok(text, 'there is a Looking back section');
-    assert.ok(text.includes('Phones away at dinner · Both'));
-    assert.ok(text.includes('Book the dentist · Bo'));
+    assert.ok(text.includes('Phones away at dinner Both'));
+    assert.ok(text.includes('Book the dentist Bo'));
     assert.equal(text.includes('Already finished'), false);
     assert.equal(/\d/.test(text), false, 'no dates, ages or counts');
     // It comes before the answers.
@@ -196,7 +196,7 @@ test('an agreement added from the check-in appears in Looking back on the next v
   await reveal(ctx);
   await post(ctx, 'a', '/checkin/agreement', { body: 'A walk after dinner', owner: 'both' });
   const page = await get(ctx, 'b', '/checkin');
-  assert.ok(section(page.body, 'Looking back').includes('A walk after dinner · Both'));
+  assert.ok(section(page.body, 'Looking back').includes('A walk after dinner Both'));
 });
 
 test('agreement text in Looking back is escaped', async () => {

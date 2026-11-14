@@ -47,7 +47,7 @@ function entry(m, { user, csrf, today, editing, maxLength }) {
   const isEditing = editing?.id === m.id;
   const values = isEditing ? editing.values : { happenedOn: m.happenedOn, body: m.body };
   const controls = own
-    ? html`<details${isEditing ? raw(' open') : ''}>
+    ? html`<div class="row-actions"><details${isEditing ? raw(' open') : ''}>
 <summary class="muted small">Edit</summary>
 <form method="post" action="/moments/${m.id}/edit">
 <input type="hidden" name="_csrf" value="${csrf}">
@@ -64,8 +64,8 @@ function entry(m, { user, csrf, today, editing, maxLength }) {
 </details>
 <form method="post" action="/moments/${m.id}/remove">
 <input type="hidden" name="_csrf" value="${csrf}">
-<button class="btn btn-quiet" type="submit">Remove</button>
-</form>`
+<button class="btn btn-quiet pad" type="submit">Remove</button>
+</form></div>`
     : '';
   return html`<div class="card" id="m-${m.id}">
 <p class="muted small">${dayLabel(m.happenedOn)} · ${m.authorName}</p>

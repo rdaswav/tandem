@@ -43,11 +43,11 @@ ${error ? html`<p class="message" role="alert">${error}</p>` : ''}
 <input type="hidden" name="_csrf" value="${csrf}">
 ${fixed.map(field)}
 ${rotating.length > 0 ? html`<h2>This week's question</h2>${rotating.map(field)}` : ''}
-<p class="muted small">${otherName} cannot see this until you have both finished.</p>
-<div class="field">
-<button class="btn" type="submit" formaction="/checkin/save">Save draft</button>
+<div class="actions">
+<button class="btn btn-text" type="submit" formaction="/checkin/save">Save draft</button>
 <button class="btn btn-primary" type="submit" formaction="/checkin/submit">I'm done</button>
 </div>
+<p class="muted small">${otherName} cannot see this until you have both finished.</p>
 </form>
 ${EARLIER}`,
   });
@@ -90,7 +90,9 @@ ${isPast ? html`<p class="small"><a href="/checkin/past">Earlier check-ins</a></
 function lookingBack(openAgreements) {
   if (openAgreements.length === 0) return '';
   return html`<h2>Looking back</h2>
-<div class="card">${openAgreements.map((g) => html`<p>${g.body} <span class="muted small">· ${g.ownerLabel}</span></p>`)}</div>`;
+<div class="list">${openAgreements.map(
+    (g) => html`<div class="row row-plain row-main"><span>${g.body}</span><span class="muted small">${g.ownerLabel}</span></div>`,
+  )}</div>`;
 }
 
 // The box at the end of reading together. form: { maxLength, values: { body, owner }, error }.
