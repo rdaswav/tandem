@@ -24,6 +24,12 @@ const PUBLIC_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '.
 // registered under (not by the raw URL, so odd URLs cannot sneak in).
 const PUBLIC_PATTERNS = new Set(['/healthz', '/signin', '/setup/:token', '/public/*']);
 
+// The path as it goes in the log. A setup link is a secret until it is used,
+// so its token is replaced before the line is written.
+export function logPath(url) {
+  return String(url).split('?')[0].replace(/^\/setup\/[^/]*/i, '/setup/:token');
+}
+
 export function buildApp({ db, clock, config }) {
   const app = Fastify({ logger: false });
   app.decorate('db', db);
@@ -41,7 +47,7 @@ export function buildApp({ db, clock, config }) {
   if (config.log) {
     // Method, path and status only. Never bodies, never query strings.
     app.addHook('onResponse', async (req, reply) => {
-      console.log(`${req.method} ${req.url.split('?')[0]} ${reply.statusCode}`);
+      console.log(`${req.method} ${logPath(req.url)} ${reply.statusCode}`);
     });
   }
 
