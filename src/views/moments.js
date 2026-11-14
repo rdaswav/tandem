@@ -17,6 +17,13 @@ export function dayLabel(date) {
   return `${d} ${MONTHS[m - 1]}`;
 }
 
+// The two tabs shared by the Moments and Ideas pages. current is 'moments' or 'ideas'.
+export function momentTabs(current) {
+  const tab = (key, href, label) =>
+    html`<a href="${href}"${current === key ? raw(' aria-current="page"') : ''}>${label}</a>`;
+  return html`<nav class="tabs" aria-label="Moments and ideas">${tab('moments', '/moments', 'Moments')} ${tab('ideas', '/ideas', 'Ideas')}</nav>`;
+}
+
 function multiline(text) {
   return text
     .split('\n')
@@ -77,9 +84,10 @@ export function momentsPage({ user, csrf, today, moments, maxLength, error = nul
     user,
     current: 'moments',
     body: html`<h1>Moments</h1>
+${momentTabs('moments')}
 ${error ? html`<p class="message" role="alert">${error}</p>` : ''}
 <h2>Add a moment</h2>
-<form class="card" method="post" action="/moments">
+<form class="card" id="new-moment" method="post" action="/moments">
 <input type="hidden" name="_csrf" value="${csrf}">
 <div class="field">
 <label for="happened_on">Date</label>

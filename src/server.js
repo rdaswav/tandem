@@ -11,6 +11,7 @@ import { csrfValid, sessionFromCookie } from './core/auth.js';
 import { COOKIE_NAME, authRoutes } from './routes/auth.js';
 import { checkinRoutes } from './routes/checkin.js';
 import { homeRoutes } from './routes/home.js';
+import { ideasRoutes } from './routes/ideas.js';
 import { momentsRoutes } from './routes/moments.js';
 import { messagePage } from './views/layout.js';
 
@@ -80,6 +81,7 @@ export function buildApp({ db, clock, config }) {
   homeRoutes(app);
   checkinRoutes(app);
   momentsRoutes(app);
+  ideasRoutes(app);
 
   return app;
 }
